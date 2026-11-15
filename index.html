@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dicas de IA — Maestros da IA</title>
+  <style>
+    :root {
+      --bg: #12110f;
+      --bg-elev: #1c1a17;
+      --bg-card: #23211d;
+      --bg-card-hover: #2b2823;
+      --line: #3a362f;
+      --text: #f3ece1;
+      --muted: #b5a894;
+      --accent: #e8b86d;
+      --accent-dim: rgba(232, 184, 109, 0.14);
+      --chip: #2a261f;
+      --chip-on: #e8b86d;
+      --chip-on-text: #1a160f;
+      --danger: #d48a72;
+      --radius: 14px;
+      --shadow: 0 12px 40px rgba(0, 0, 0, 0.28);
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
+      background:
+        radial-gradient(1200px 500px at 10% -10%, rgba(232, 184, 109, 0.08), transparent 55%),
+        var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+    .wrap { width: min(1120px, calc(100% - 2rem)); margin: 0 auto; padding: 2.25rem 0 4rem; }
+    header { margin-bottom: 1.75rem; }
+    .kicker {
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      font-size: 0.72rem;
+      color: var(--accent);
+      margin: 0 0 0.4rem;
+    }
+    h1 { font-weight: 600; font-size: clamp(1.8rem, 4vw, 2.6rem); margin: 0 0 0.4rem; letter-spacing: -0.02em; }
+    .lead { color: var(--muted); margin: 0; max-width: 42rem; }
+    .controls {
+      position: sticky; top: 0; z-index: 5;
+      background: linear-gradient(to bottom, rgba(18,17,15,0.96), rgba(18,17,15,0.88) 70%, transparent);
+      padding: 0.75rem 0 1.1rem;
+      backdrop-filter: blur(8px);
+    }
+    label.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
+    #busca {
+      width: 100%;
+      font: inherit;
+      font-size: 1.05rem;
+      color: var(--text);
+      background: var(--bg-elev);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 0.85rem 1.2rem;
+      outline: none;
+      box-shadow: var(--shadow);
+    }
+    #busca:focus { border-color: var(--accent); }
+    #busca::placeholder { color: #8d816d; }
+    .chips { display: flex; flex-wrap: wrap; gap: 0.45rem; margin: 0.9rem 0 0; }
+    .chip {
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+      font-size: 0.8rem;
+      border: 1px solid var(--line);
+      background: var(--chip);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 0.35rem 0.75rem;
+      cursor: pointer;
+    }
+    .chip[aria-pressed="true"] {
+      background: var(--chip-on);
+      color: var(--chip-on-text);
+      border-color: var(--chip-on);
+    }
+    .meta {
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin: 0.2rem 0 1.1rem;
+    }
+    #contagem strong { color: var(--accent); font-weight: 650; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1rem;
+    }
+    article.card {
+      background: var(--bg-card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 1.15rem 1.15rem 1.05rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+      min-height: 100%;
+    }
+    article.card:hover { background: var(--bg-card-hover); }
+    .cat {
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+    .card h2 { font-size: 1.15rem; margin: 0; line-height: 1.3; font-weight: 600; }
+    .card p { margin: 0; color: #ddd4c6; font-size: 0.95rem; flex: 1; }
+    .tools { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+    .tool {
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+      font-size: 0.72rem;
+      background: var(--accent-dim);
+      color: var(--accent);
+      border-radius: 999px;
+      padding: 0.18rem 0.5rem;
+    }
+    .card a {
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+      font-size: 0.8rem;
+      color: var(--accent);
+      text-decoration: none;
+      margin-top: 0.2rem;
+    }
+    .card a:hover { text-decoration: underline; }
+    .vazio, .aviso {
+      color: var(--muted);
+      background: var(--bg-elev);
+      border: 1px dashed var(--line);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+    }
+    .aviso { color: var(--danger); margin-bottom: 1rem; display: none; }
+    footer {
+      margin-top: 2.5rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+      font-size: 0.8rem;
+    }
+    footer a { color: var(--accent); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <p class="kicker">Comunidade Maestros da IA</p>
+      <h1>Busca nas dicas de IA</h1>
+      <p class="lead">Filtre pelo título, descrição, categoria ou ferramentas. Os dados vêm do arquivo público extraído da landing da comunidade.</p>
+    </header>
+
+    <div class="controls">
+      <label class="sr" for="busca">Buscar dicas de IA</label>
+      <input id="busca" type="search" placeholder="Buscar por título, descrição, categoria ou ferramenta…" autocomplete="off" spellcheck="false">
+      <div id="chips" class="chips" role="group" aria-label="Filtrar por categoria"></div>
+    </div>
+
+    <p id="contagem" class="meta" aria-live="polite"></p>
+    <p id="aviso" class="aviso" role="status"></p>
+    <div id="resultados" class="grid"></div>
+
+    <footer>
+      Fonte: <a id="fonte-link" href="https://comunidade.maestrosdaia.com">comunidade.maestrosdaia.com</a>
+      · Extraído em <span id="extraido-em">—</span>
+      com Firecrawl.
+    </footer>
+  </div>
+
+  <script id="dados-embutidos" type="application/json">
+{
+  "fonte": "https://comunidade.maestrosdaia.com",
+  "extraido_em": "2026-11-15T15:03:12-03:00",
+  "ferramenta": "Firecrawl",
+  "paginas": [
+    {
+      "url": "https://comunidade.maestrosdaia.com/#inicio",
+      "titulo": "Comunidade Maestros da IA: Vanguarda em Inteligência Artificial"
+    },
+    {
+      "url": "https://comunidade.maestrosdaia.com/#comunidade",
+      "titulo": "A comunidade — problema, pilares e espaços"
+    },
+    {
+      "url": "https://comunidade.maestrosdaia.com/#trilhas",
+      "titulo": "O que você recebe — cinco trilhas e recursos prontos"
+    },
+    {
+      "url": "https://comunidade.maestrosdaia.com/#lives",
+      "titulo": "Lives semanais e biblioteca de gravações"
+    },
+    {
+      "url": "https://comunidade.maestrosdaia.com/#fundadores",
+      "titulo": "Quem somos — Arthur Endo e Lyria Zoccal"
+    },
+    {
+      "url": "https://comunidade.maestrosdaia.com/#faq",
+      "titulo": "Perguntas frequentes (respostas recolhidas no scrape)"
+    },
+    {
+      "url": "https://comunidade.maestrosdaia.com/termos",
+      "titulo": "Termos de Uso | Maestros da IA"
+    }
+  ],
+  "dicas": [
+    {
+      "titulo": "Evite a esteira da IA",
+      "descricao": "Segundo a landing da comunidade, o mercado de IA se reinventa a cada 90 dias: você descobre uma ferramenta, passa 2 semanas aprendendo, monta o primeiro fluxo e descobre que já saiu algo melhor. Sozinho, esse ciclo não termina.",
+      "categoria": "Estratégia",
+      "ferramentas_citadas": [],
+      "url_origem": "https://comunidade.maestrosdaia.com/#comunidade"
+    },
+    {
+      "titulo": "Cursos estáticos envelhecem rápido",
+      "descricao": "A página alerta que, ao comprar um curso de IA e estudar 3 semanas, metade das ferramentas já pode ter mudado quando você termina. O conteúdo congela; o mercado não.",
+      "categoria": "Estratégia",
+      "ferramentas_citadas": [],
+      "url_origem": "https://comunidade.maestrosdaia.com/#comunidade"
+    },
+    {
+      "titulo": "Filtre o que vale estudar e praticar",
+      "descricao": "Novos agentes, ferramentas e skills aparecem o tempo todo. Sem curadoria, a orientação da página é que você testa tudo e não domina nada: é preciso escolher o que vale estudar e colocar em prática, em vez de acompanhar cada lançamento.",
+      "categoria": "Estratégia",
+      "ferramentas_citadas": [],
+      "url_origem": "https://comunidade.maestrosdaia.com/#comunidade"
+    },
+    {
+      "titulo": "Erro específico de automação não se resolve só no Google",
+      "descricao": "O exemplo dado na página é um webhook do n8n com erro 403 à noite: a busca no Google devolve respostas genéricas de 2024, nenhuma para o cenário real. O texto sugere recorrer a quem já implementou o mesmo caso, não apenas a tutoriais genéricos.",
+      "categoria": "Automação",
+      "ferramentas_citadas": [
+        "n8n"
+      ],
+      "url_origem": "https://comunidade.maestrosdaia.com/#comunidade"
+    },
+    {
+      "titulo": "Registrar o webhook do n8n ao conectar o agente no WhatsApp",
+      "descricao": "No exemplo de suporte exibido na landing, o erro de webhook ao conectar um agente no WhatsApp com n8n acontece quando o webhook não está registrado. Os passos mostrados são: 1) abrir o n8n no Webhook node; 2) copiar a URL de produção; 3) colar no Evolution API. A própria página interrompe a instrução nesse ponto (“Cola no Evolution API...”).",
+      "categoria": "Automação",
+      "ferramentas_citadas": [
+        "n8n",
+        "WhatsApp",
+        "Evolution API"
+      ],
+      "url_origem": "https://comunidade.maestrosdaia.com/#comunidade"
+    },
+    {
+      "titulo": "Aprenda a comandar agentes, não só uma ferramenta",
+      "descricao": "A página afirma que Claude Code, Hermes e Codex são três formas diferentes de colocar um agente para trabalhar. A comunidade cobre as três, com a Formação Maestros da IA como base para quem começa do zero e uma trilha dedicada à criação de conteúdo.",
+      "categoria": "Agentes",
+      "ferramentas_citadas": [
+        "Claude Code",
+        "Hermes",
+        "Codex"
+      ],
+      "url_origem": "https://comunidade.maestrosdaia.com/#trilhas"
+    },
+    {
+      "titulo": "Formação: fundamentos de IA, n8n e arquitetura de agentes",
+      "descricao": "A trilha Formação Maestros da IA é um programa de 10 semanas que conecta fundamentos de IA, agentes, automação e negócios. O texto da página descreve aprender a configurar o n8n, criar funcionários de IA e estruturar a arquitetura dos agentes. Havia 75 aulas publicadas e mais 3 em produção no momento da extração.",
+      "categoria": "Formação",
+      "ferramentas_citadas": [
+        "n8n"
+      ],
+      "url_origem": "https://comunidade.maestrosdaia.com/#trilhas"
+    },
+    {
+      "titulo": "Claude Code: do primeiro projeto ao aplicativo em produção",
+      "descricao": "A trilha do agente da Anthropic cobre, segundo a landing, arquitetura de agentes, arquivos .md, MCP, backend e frontend, cibersegurança, pagamentos, escala e VPS — do primeiro projeto à construção de aplicações. Havia 27 aulas publicadas e mais 46 em produção no momento da extração.",
+      "categoria": "Agentes",
+      "ferramentas_citadas": [
+        "Claude Code",
+        "MCP",
+        "VPS"
+      ],
+      "url_origem": "https://comunidade.maestrosdaia.com/#trilhas"
+    },
+    {
+      "titulo": "Hermes: agente no Telegram com skills e prospecção",
+      "descricao": "A trilha Hermes ensina a instalar o agente, conectá-lo ao Telegram e acompanhar tudo pelo painel. O texto descreve: configurar o Hermes do zero, criar a primeira skill, agendar uma tarefa automática e montar um projeto de prospecção ligando Apify, Firecrawl, Supabase e Gmail. O terceiro módulo mostra quais skills usar e como elas afetam o comportamento e o consumo do agente. São 20 aulas em 3 módulos, publicadas em setembro de 2026.",
+      "categoria": "Agentes",
+      "ferramentas_citadas": [
+        "Hermes",
+        "Telegram",
+        "Apify",
+        "Firecrawl",
+        "Supabase",
+        "Gmail"
+      ],
+      "url_origem": "https://comunidade.maestrosdaia.com/#trilhas"
+    },
+    {
+      "titulo": "Codex: instale, ajuste permissões e escreva o AGENTS.md",
+      "descricao": "Na trilha do agente da OpenAI, a página descreve aprender a instalar, escolher modelo e nível de esforço, ajustar permissões, usar o Computer Use, instalar plugins e escrever o AGENTS.md que orienta o agente em cada projeto. Também cita entender as diferenças de custo e comportamento em relação ao Claude Code. Havia 11 aulas publicadas no momento da extração.",
+      "categoria": "Agentes",
+      "ferramentas_citadas": [
+        "Codex",
+        "Computer Use",
+        "Claude Code"
+      ],
+      "url_origem": "https://comunidade.maestrosdaia.com/#trilhas"
+    },
+    {
+      "titulo": "Monte uma rotina de criação de conteúdo com IA",
+      "descricao": "A trilha Criação de Conteúdo com IA é descrita como dedicada à produção de conteúdo com inteligência artificial, para transformar ideias em uma rotina de criação da ideia à publicação. Havia 14 aulas publicadas no momento da extração.",
+      "categoria": "Conteúdo",
+      "ferramentas_citadas": [],
+      "url_origem": "https://comunidade.maestrosdaia.com/#trilhas"
+    },
+    {
+      "titulo": "Comece com recursos prontos, sem montar tudo do zero",
+      "descricao": "A landing descreve 329 recursos publicados para copiar, usar, instalar ou adaptar: 161 no Arsenal (prompts, templates e recursos prontos), 100 skills de Claude Code prontas para instalar e ampliar as capacidades do agente, 56 Apps Maestros (aplicativos completos para usar ou clonar) e 12 agentes de IA já configurados.",
+      "categoria": "Recursos",
+      "ferramentas_citadas": [
+        "Claude Code"
+      ],
+      "url_origem": "https://comunidade.maestrosdaia.com/#trilhas"
+    },
+    {
+      "titulo": "Fábrica de Conteúdo Autônoma",
+      "descricao": "Sistema completo citado na seção “Da criação ao atendimento”: um sistema de produção de conteúdo com IA para levar a criação à rotina do negócio.",
+      "categoria": "Conteúdo",
+      "ferramentas_citadas": [],
+      "url_origem": "https://comunidade.maestrosdaia.com/#trilhas"
+    },
+    {
+      "titulo": "Maestro Atende: atendente de IA no WhatsApp",
+      "descricao": "A página apresenta o Maestro Atende como um atendente de IA no WhatsApp pronto para operar e apoiar o atendimento da empresa.",
+      "categoria": "Automação",
+      "ferramentas_citadas": [
+        "WhatsApp"
+      ],
+      "url_origem": "https://comunidade.maestrosdaia.com/#trilhas"
+    },
+    {
+      "titulo": "Ultracode e Unlazy: como ter resultados melhores com IA",
+      "descricao": "Tema de live listado na biblioteca pública de gravações, em 23/08/2026. A seção de lives afirma que, toda semana, Arthur e Lyria encontram a comunidade para compartilhar estratégias, ferramentas e aplicações de IA, com 22 gravações disponíveis para consulta. Também aparecem as lives de 09/09/2026 e 20/09/2026, ambas intituladas “LIVE com os Maestros”. A página não informa horário.",
+      "categoria": "Lives",
+      "ferramentas_citadas": [
+        "Ultracode",
+        "Unlazy"
+      ],
+      "url_origem": "https://comunidade.maestrosdaia.com/#lives"
+    },
+    {
+      "titulo": "Acompanhe novidades, ferramentas e prompts com curadoria",
+      "descricao": "Entre os espaços descritos na landing estão News / AI Updates (novidades de IA curadas) e Kit de Ferramentas e YouTube + Prompts (ferramentas essenciais selecionadas, vídeos do canal e prompts para colocar em prática). Também há Chat, Discussões e Business, além de 9 aplicativos publicados pelos próprios membros.",
+      "categoria": "Comunidade",
+      "ferramentas_citadas": [
+        "YouTube"
+      ],
+      "url_origem": "https://comunidade.maestrosdaia.com/#comunidade"
+    },
+    {
+      "titulo": "Reserve pelo menos 2 horas por semana para praticar",
+      "descricao": "Na seção “A comunidade combina com você?”, a página afirma que o programa não é o ideal para quem busca fórmula mágica de dinheiro fácil sem implementar nada, para quem procura apenas conteúdo teórico ou acadêmico, ou para quem não pode reservar pelo menos 2 horas por semana para praticar. O perfil indicado é quem quer usar IA para crescer sem ampliar a equipe, automatizar tarefas repetitivas ou colocar o primeiro projeto em prática.",
+      "categoria": "Estratégia",
+      "ferramentas_citadas": [],
+      "url_origem": "https://comunidade.maestrosdaia.com/#fundadores"
+    },
+    {
+      "titulo": "IA não é sobre código. É sobre estratégia",
+      "descricao": "Frase destacada na seção dos fundadores Arthur Endo e Lyria Zoccal: “IA não é sobre código. É sobre estratégia. Quem entende isso primeiro, domina o mercado.”",
+      "categoria": "Estratégia",
+      "ferramentas_citadas": [],
+      "url_origem": "https://comunidade.maestrosdaia.com/#fundadores"
+    },
+    {
+      "titulo": "Ferramentas, APIs e hospedagem podem ter custo à parte",
+      "descricao": "Os Termos de Uso públicos avisam que a assinatura cobre os conteúdos e espaços da comunidade, mas planos de ferramentas, APIs, hospedagem e serviços externos podem ter custos separados, conforme o fornecedor e o uso. A orientação é conferir limites e condições antes de ativar uma integração. Resultados dependem da aplicação e não há garantia de faturamento.",
+      "categoria": "Ferramentas",
+      "ferramentas_citadas": [],
+      "url_origem": "https://comunidade.maestrosdaia.com/termos"
+    }
+  ],
+  "observacoes": "O mapa do Firecrawl em comunidade.maestrosdaia.com encontrou apenas a landing pública (https://comunidade.maestrosdaia.com e #inicio). Não havia posts, spaces, blog ou aulas abertas nesse domínio. O botão “Já Sou Aluno” leva a https://maestros-da-ia.circle.so/, que redireciona para a tela de login/cadastro do Circle (“Boas-vindas à Maestros da IA. Por favor, faça login ou cadastre-se abaixo.”). Aulas (147), recursos (329 prompts, templates, skills, apps e agentes), discussões, chat, suporte interno e as 22 gravações completas das lives ficam atrás desse login. Não houve tentativa de autenticação nem qualquer bypass. A seção de FAQ da landing lista 14 perguntas, mas as respostas estavam recolhidas no botão “Ler resposta” e não ficaram visíveis no scrape; por isso não foram incluídas. Os Termos de Uso (https://comunidade.maestrosdaia.com/termos) são públicos. A Política de Privacidade está em https://politica.maestrosdaia.com/ e não contém dicas de IA. As entradas abaixo são apenas as orientações e descrições práticas visíveis na landing de vendas, extraídas fielmente do texto raspado — não são o acervo interno da comunidade. O exemplo de suporte sobre webhook do n8n aparece incompleto na própria página (termina em “Cola no Evolution API...”)."
+}
+  </script>
+  <script>
+    function normalizar(texto) {
+      return String(texto || "")
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+    }
+
+    function escapar(texto) {
+      return String(texto || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function textoBuscavel(dica) {
+      const ferramentas = Array.isArray(dica.ferramentas_citadas) ? dica.ferramentas_citadas.join(" ") : "";
+      return normalizar([dica.titulo, dica.descricao, dica.categoria, ferramentas].join(" "));
+    }
+
+    function filtrarDicas(dicas, termo, categoria) {
+      const q = normalizar(termo).trim();
+      return dicas.filter(function (dica) {
+        const okCat = !categoria || dica.categoria === categoria;
+        const okTermo = !q || textoBuscavel(dica).indexOf(q) !== -1;
+        return okCat && okTermo;
+      });
+    }
+
+    function categoriasDe(dicas) {
+      const set = {};
+      dicas.forEach(function (d) {
+        if (d.categoria) set[d.categoria] = true;
+      });
+      return Object.keys(set).sort(function (a, b) {
+        return a.localeCompare(b, "pt-BR");
+      });
+    }
+
+    function formatarData(iso) {
+      if (!iso) return "—";
+      const d = new Date(iso);
+      if (isNaN(d.getTime())) return iso;
+      return new Intl.DateTimeFormat("pt-BR", {
+        dateStyle: "short",
+        timeStyle: "short",
+        timeZone: "America/Sao_Paulo"
+      }).format(d) + " (horário de Brasília)";
+    }
+
+    function renderizarCards(lista) {
+      const box = document.getElementById("resultados");
+      if (!lista.length) {
+        box.innerHTML = '<p class="vazio">Nenhuma dica encontrada para essa busca.</p>';
+        return;
+      }
+      box.innerHTML = lista.map(function (dica) {
+        const tools = (dica.ferramentas_citadas || []).map(function (t) {
+          return '<span class="tool">' + escapar(t) + "</span>";
+        }).join("");
+        const href = dica.url_origem ? escapar(dica.url_origem) : "#";
+        return (
+          '<article class="card">' +
+            (dica.categoria ? '<div class="cat">' + escapar(dica.categoria) + "</div>" : "") +
+            "<h2>" + escapar(dica.titulo) + "</h2>" +
+            "<p>" + escapar(dica.descricao) + "</p>" +
+            (tools ? '<div class="tools">' + tools + "</div>" : "") +
+            (dica.url_origem ? '<a href="' + href + '" target="_blank" rel="noopener noreferrer">Abrir origem</a>' : "") +
+          "</article>"
+        );
+      }).join("");
+    }
+
+    function atualizarContagem(visiveis, total) {
+      const el = document.getElementById("contagem");
+      if (visiveis === total) {
+        el.innerHTML = "<strong>" + visiveis + "</strong> dica" + (visiveis === 1 ? "" : "s") + " no acervo";
+      } else {
+        el.innerHTML = "<strong>" + visiveis + "</strong> de " + total + " dicas encontradas";
+      }
+    }
+
+    var estado = { dicas: [], categoria: "", termo: "" };
+
+    function redesenhar() {
+      const filtradas = filtrarDicas(estado.dicas, estado.termo, estado.categoria);
+      atualizarContagem(filtradas.length, estado.dicas.length);
+      renderizarCards(filtradas);
+    }
+
+    function montarChips(dicas) {
+      const wrap = document.getElementById("chips");
+      const cats = ["Todas"].concat(categoriasDe(dicas));
+      wrap.innerHTML = cats.map(function (nome, i) {
+        const valor = i === 0 ? "" : nome;
+        const pressed = (estado.categoria === valor) ? "true" : "false";
+        return '<button type="button" class="chip" data-cat="' + escapar(valor) + '" aria-pressed="' + pressed + '">' + escapar(nome) + "</button>";
+      }).join("");
+      wrap.addEventListener("click", function (ev) {
+        const btn = ev.target.closest(".chip");
+        if (!btn) return;
+        estado.categoria = btn.getAttribute("data-cat") || "";
+        wrap.querySelectorAll(".chip").forEach(function (b) {
+          b.setAttribute("aria-pressed", b === btn ? "true" : "false");
+        });
+        redesenhar();
+      });
+    }
+
+    function iniciar(dados, origem) {
+      estado.dicas = Array.isArray(dados && dados.dicas) ? dados.dicas : [];
+      const fonte = document.getElementById("fonte-link");
+      if (dados && dados.fonte) {
+        fonte.href = dados.fonte;
+        fonte.textContent = dados.fonte.replace(/^https?:\/\//, "");
+      }
+      document.getElementById("extraido-em").textContent = formatarData(dados && dados.extraido_em);
+      montarChips(estado.dicas);
+      document.getElementById("busca").addEventListener("input", function (ev) {
+        estado.termo = ev.target.value;
+        redesenhar();
+      });
+      redesenhar();
+      if (origem === "embutido") {
+        const aviso = document.getElementById("aviso");
+        aviso.style.display = "block";
+        aviso.textContent = "Não foi possível carregar dados.json; usando a cópia embutida nesta página.";
+      }
+    }
+
+    function lerEmbutido() {
+      const el = document.getElementById("dados-embutidos");
+      return JSON.parse(el.textContent);
+    }
+
+    function carregar() {
+      const aviso = document.getElementById("aviso");
+      fetch("dados.json")
+        .then(function (res) {
+          if (!res.ok) throw new Error("HTTP " + res.status);
+          return res.json();
+        })
+        .then(function (dados) { iniciar(dados, "arquivo"); })
+        .catch(function () {
+          try {
+            iniciar(lerEmbutido(), "embutido");
+          } catch (err) {
+            aviso.style.display = "block";
+            aviso.textContent = "Não foi possível ler os dados das dicas.";
+          }
+        });
+    }
+
+    if (typeof window !== "undefined") {
+      window.DicasIA = { normalizar: normalizar, filtrarDicas: filtrarDicas, categoriasDe: categoriasDe, lerEmbutido: lerEmbutido };
+      if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", carregar);
+      else carregar();
+    }
+  </script>
+</body>
+</html>
